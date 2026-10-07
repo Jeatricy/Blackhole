@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>GARGANTUA — Schwarzschild Black Hole Raytracer</title>
+<meta name="description" content="Real-time Schwarzschild null-geodesic raytracer: event horizon, photon ring, gravitationally lensed accretion disk, Doppler beaming and gravitational redshift, integrated per-pixel in a fragment shader.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='7'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23ffb066' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./src/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="gl" aria-label="Schwarzschild black hole raytracer viewport" role="img"></canvas>
+
+<!-- BOOT / FATAL OVERLAYS -->
+<div id="boot" class="overlay">
+  <div class="ov-box">
+    <div class="ov-title">GARGANTUA</div>
+    <div class="ov-sub">Schwarzschild Null-Geodesic Raytracer</div>
+    <div class="ov-bar"><i id="boot-bar"></i></div>
+    <div class="ov-msg" id="boot-msg">初始化 WebGL2 上下文…</div>
+  </div>
+</div>
+<div id="fatal" class="overlay hidden" role="alertdialog" aria-modal="true">
+  <div class="ov-box">
+    <div class="ov-title err">渲染器不可用</div>
+    <div class="ov-msg" id="fatal-msg"></div>
+    <div class="ov-actions"><button id="fatal-retry" type="button">重试</button></div>
+  </div>
+</div>
+<div id="tapaudio" class="hidden" role="button" tabindex="0" aria-label="启用氛围音乐">♪ 点击启用氛围音乐</div>
+<div id="toasts" aria-live="polite"></div>
+<div id="hud">
+  <!-- LEFT: physics readout -->
+  <section id="readout" aria-label="物理读数">
+    <header>
+      <h1>GARGANTUA</h1>
+      <p>Schwarzschild Null-Geodesic Raytracer<br><span class="dim">全屏片元着色器 · 实时零测地线积分</span></p>
+    </header>
+    <dl id="ro-grid"></dl>
+  </section>
+
+  <!-- RIGHT: control panel -->
+  <section id="panel" aria-label="参数控制面板">
+    <div id="panel-head">
+      <span>CONTROLS</span>
+      <button id="panel-toggle" type="button" title="折叠/展开 (Tab)" aria-expanded="true">▾</button>
+    </div>
+    <div id="panel-body">
+      <div class="row seg" role="group" aria-label="质量档">
+        <label>QUALITY</label>
+        <div class="btns" id="q-btns">
+          <button type="button" data-q="standard">STD</button>
+          <button type="button" data-q="high">HIGH</button>
+          <button type="button" data-q="cinematic">CINE</button>
+        </div>
+      </div>
+      <div class="row seg" role="group" aria-label="视角预设">
+        <label>PRESET</label>
+        <div class="btns" id="p-btns">
+          <button type="button" data-p="0" title="Shift+1">ICONIC</button>
+          <button type="button" data-p="1" title="Shift+2">EDGE</button>
+          <button type="button" data-p="2" title="Shift+3">POLAR</button>
+          <button type="button" data-p="3" title="Shift+4">PLUNGE</button>
+        </div>
+      </div>
+      <div id="panel-params"></div>
+      <div class="row acts">
+        <button id="btn-cine" type="button" title="C">CINEMA</button>
+        <button id="btn-orbit" type="button" title="O">AUTO-ORBIT</button>
+        <button id="btn-audio" type="button" title="M">MUSIC</button>
+      </div>
+      <div class="row acts">
+        <button id="btn-shot" type="button" title="S">SCREENSHOT</button>
+        <button id="btn-link" type="button" title="L">COPY LINK</button>
+        <button id="btn-reset" type="button" title="R">RESET</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM: status strip -->
+  <section id="status" aria-label="状态">
+    <span id="st-view">VIEW 0 · FINAL COMPOSITE</span>
+    <span class="sep">│</span><span id="st-mode">FREE ORBIT</span>
+    <span class="sep">│</span><span id="st-perf">— fps</span>
+    <span class="sep">│</span><span id="st-res">—</span>
+    <span class="sep">│</span><span class="dim">按 <kbd>?</kbd> 查看快捷键</span>
+  </section>
+</div>
+
+<div id="help" class="overlay hidden" role="dialog" aria-modal="true" aria-label="快捷键">
+  <div class="ov-box wide">
+    <div class="ov-title">KEYBOARD / 快捷键</div>
+    <div id="help-grid"></div>
+    <div class="ov-actions"><button id="help-close" type="button">关闭 (Esc)</button></div>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
